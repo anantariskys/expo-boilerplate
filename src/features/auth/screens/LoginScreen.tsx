@@ -18,18 +18,20 @@ export function LoginScreen() {
   );
 }
 
+import { theme } from '@/src/theme';
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 16,
+    padding: theme.spacing.m,
   },
   card: {
     width: '100%',
     maxWidth: 400,
-    borderRadius: 16,
-    padding: 24,
+    borderRadius: theme.radius.xl,
+    padding: theme.spacing.l,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -37,8 +39,8 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   header: {
-    fontSize: 28,
-    fontWeight: 'bold',
+    fontSize: theme.typography.sizes.xxl,
+    fontWeight: theme.typography.weights.bold as any,
     textAlign: 'center',
   },
 });

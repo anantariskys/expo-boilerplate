@@ -1,9 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Stack as ExpoStack, useRouter as useExpoRouter, useSegments as useExpoSegments, useRootNavigationState } from 'expo-router';
 import { AppProvider } from '@/src/providers';
 import { StatusBar } from 'expo-status-bar';
 import { useAuthStore } from '@/src/store/useAuthStore';
 import * as SplashScreen from 'expo-splash-screen';
+import { useFonts } from 'expo-font';
+import Ionicons from '@expo/vector-icons/Ionicons';
+
+// Initialize i18n before app renders
+import '@/src/i18n';
 
 // 1. Ekspor Error Boundary bawaan dari Expo Router untuk menangkap UI Crashes
 export { ErrorBoundary } from 'expo-router';
@@ -16,29 +21,21 @@ export default function RootLayout() {
   const segments = useExpoSegments();
   const router = useExpoRouter();
   const navigationState = useRootNavigationState();
-  const [isAppReady, setIsAppReady] = useState(false);
 
-  // Efek Pertama: Inisialisasi Aplikasi (Font, dsb)
+  // 3. Memuat Custom Fonts (misal: Icon fonts agar tidak berkedip saat pertama kali render)
+  const [fontsLoaded, fontError] = useFonts({
+    ...Ionicons.font,
+  });
+
+  // Lempar error font ke ErrorBoundary jika gagal dimuat
   useEffect(() => {
-    if (!navigationState?.key) return;
-
-    const prepareApp = async () => {
-      try {
-        // Contoh tempat memuat custom font atau data inisial lainnya:
-        // await Font.loadAsync(customFonts);
-      } catch (e) {
-        console.warn(e);
-      } finally {
-        setIsAppReady(true);
-      }
-    };
-
-    prepareApp();
-  }, [navigationState?.key]);
+    if (fontError) throw fontError;
+  }, [fontError]);
 
   // Efek Kedua: Auth Guard dan Menutup Splash Screen
   useEffect(() => {
-    if (!isAppReady || !navigationState?.key) return;
+    // Pastikan Font dan Navigasi sudah 100% siap
+    if (!fontsLoaded || !navigationState?.key) return;
 
     const inAuthGroup = segments[0] === '(auth)';
 
@@ -50,9 +47,9 @@ export default function RootLayout() {
 
     // PENTING: Sembunyikan Splash Screen SETELAH routing selesai menentukan arah
     SplashScreen.hideAsync();
-  }, [isAuthenticated, segments, navigationState?.key, isAppReady]);
+  }, [isAuthenticated, segments, navigationState?.key, fontsLoaded]);
 
-  if (!isAppReady) {
+  if (!fontsLoaded) {
     // Return null membiarkan Splash Screen Native tetap tampil
     return null; 
   }

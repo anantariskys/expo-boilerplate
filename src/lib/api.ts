@@ -1,9 +1,7 @@
 import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
 import { ENV } from '../config/env';
+import { useAuthStore } from '../store/useAuthStore';
 
-/**
- * Konfigurasi default untuk instance Axios.
- */
 export const apiClient: AxiosInstance = axios.create({
   baseURL: ENV.API_URL,
   timeout: 10000,
@@ -15,15 +13,16 @@ export const apiClient: AxiosInstance = axios.create({
 
 /**
  * Request Interceptor
- * Berguna untuk menyisipkan token (Authorization) sebelum request dikirim.
+ * Menyisipkan Token JWT ke setiap request secara otomatis.
  */
 apiClient.interceptors.request.use(
-  async (config: InternalAxiosRequestConfig) => {
-    // Contoh penambahan token:
-    // const token = await AsyncStorage.getItem('token');
-    // if (token && config.headers) {
-    //   config.headers.Authorization = `Bearer ${token}`;
-    // }
+  (config: InternalAxiosRequestConfig) => {
+    // Ambil token secara langsung dari Zustand (di luar React lifecycle)
+    const token = useAuthStore.getState().token;
+    
+    if (token && config.headers) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
   },
   (error: AxiosError) => {
@@ -33,7 +32,7 @@ apiClient.interceptors.request.use(
 
 /**
  * Response Interceptor
- * Berguna untuk menangani error secara global, misalnya auto logout jika token expired (401).
+ * Menangkap error global, contohnya me-logout user jika token kadaluarsa (401).
  */
 apiClient.interceptors.response.use(
   (response: AxiosResponse) => {
@@ -41,8 +40,9 @@ apiClient.interceptors.response.use(
   },
   (error: AxiosError) => {
     if (error.response?.status === 401) {
-      // Handle unauthorized error, e.g. redirect to Login
-      console.warn('Unauthorized access - perhaps redirect to login?');
+      // Token tidak valid atau kadaluarsa -> Auto Logout
+      console.warn('Unauthorized access - Auto logging out.');
+      useAuthStore.getState().logout();
     }
     return Promise.reject(error);
   }

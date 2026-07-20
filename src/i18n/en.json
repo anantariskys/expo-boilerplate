@@ -1,0 +1,18 @@
+{
+  "login": {
+    "title": "Login to App",
+    "emailPlaceholder": "Email",
+    "passwordPlaceholder": "Password",
+    "signInButton": "Sign In",
+    "loggingInButton": "Logging in..."
+  },
+  "home": {
+    "welcome": "Welcome back",
+    "subtitle": "This is the Home Tab.",
+    "logoutButton": "Logout"
+  },
+  "validation": {
+    "emailInvalid": "Invalid email format",
+    "passwordMin": "Password must be at least 6 characters"
+  }
+}

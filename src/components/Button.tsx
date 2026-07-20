@@ -34,14 +34,16 @@ export function Button({ title, style, ...props }: ButtonProps) {
   );
 }
 
+import { theme } from '../theme';
+
 const styles = StyleSheet.create({
   button: {
-    borderRadius: 8,
+    borderRadius: theme.radius.m,
     alignItems: "center",
     justifyContent: "center",
   },
   text: {
-    fontSize: 16,
-    fontWeight: "600",
+    fontSize: theme.typography.sizes.m,
+    fontWeight: theme.typography.weights.semibold as any,
   },
 });

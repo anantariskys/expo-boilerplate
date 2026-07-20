@@ -12,7 +12,9 @@ export default function AboutRoute() {
   );
 }
 
+import { theme } from '@/src/theme';
+
 const styles = StyleSheet.create({
   container: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  text: { fontSize: 18, fontWeight: '500' },
+  text: { fontSize: theme.typography.sizes.l, fontWeight: theme.typography.weights.medium as any },
 });
