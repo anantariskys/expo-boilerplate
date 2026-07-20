@@ -1,50 +1,101 @@
-# Welcome to your Expo app 👋
+# 🚀 Enterprise Expo Boilerplate
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A production-ready, feature-sliced, scalable boilerplate for React Native and Expo. Designed with the perspective of a 10+ YOE Senior Mobile Engineer.
 
-## Get started
+## ✨ Features
 
-1. Install dependencies
+- **Routing & Navigation**: Fully typed file-based routing using [Expo Router](https://docs.expo.dev/router/introduction/). Includes automated Auth Guards to protect screens without white-screen flashes.
+- **State Management (Client)**: [Zustand](https://github.com/pmndrs/zustand) + `expo-secure-store` for persistent, hardware-encrypted global states (e.g., Auth Sessions).
+- **State Management (Server)**: [TanStack React Query](https://tanstack.com/query/latest) for declarative, cached, and robust data fetching.
+- **Form Validation**: [React Hook Form](https://react-hook-form.com/) combined with [Zod](https://zod.dev/) for type-safe and performant forms.
+- **Design System & Theming**: Completely dynamic Dark/Light mode engine without any hardcoded values. Centralized `colors`, `spacing`, `typography`, and `radius`.
+- **Internationalization (i18n)**: Ready-to-use global translations powered by `i18next` and auto-detected by `expo-localization`.
+- **API Interceptors**: Pre-configured `Axios` instance that automatically injects JWT tokens and handles global `401 Unauthorized` auto-logout.
+- **Orchestration**: Seamless Splash Screen handling (`expo-splash-screen`) tied with Asynchronous Font Loading (`expo-font`) to prevent unstyled flashes.
 
-   ```bash
-   npm install
-   ```
+## 📂 Architecture (Feature-Sliced Design)
 
-2. Start the app
+This boilerplate avoids massive "spaghetti" folders by embracing a modular, feature-centric architecture:
 
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```text
+src/
+├── components/       # Reusable global UI components (Input, Button, dll)
+├── config/           # Environment variables & constants
+├── features/         # Modules separated by business logic (auth, home, dll)
+│   └── auth/         # Example feature module
+│       ├── api/      # Feature-specific API calls
+│       ├── components# Feature-specific UI
+│       ├── hooks/    # Feature-specific custom hooks
+│       └── screens/  # Feature screen layouts
+├── hooks/            # Global custom hooks (useTheme, dll)
+├── i18n/             # Localization JSONs and config
+├── lib/              # Third-party library integrations (Axios interceptor)
+├── providers/        # Global React Context providers (QueryClient, SafeArea)
+├── store/            # Global Zustand stores (useAuthStore)
+├── theme/            # Centralized Design System tokens (Colors, Spacing, dll)
+└── utils/            # Helper functions (Storage adapter)
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## 🛠 Getting Started
 
-## Learn more
+### 1. Installation
 
-To learn more about developing your project with Expo, look at the following resources:
+Clone the repository and install the dependencies:
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```bash
+npm install
+```
 
-## Join the community
+### 2. Environment Variables
 
-Join our community of developers creating universal apps.
+Copy the example environment file and fill in your API URLs:
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+```bash
+cp .env.example .env
+```
+
+### 3. Run the App
+
+Start the Expo Metro Bundler:
+
+```bash
+npm run start
+```
+- Press `a` to open on Android.
+- Press `i` to open on iOS.
+
+## 🎨 Theming System
+
+Never hardcode styles! Always use the `useTheme` hook to ensure your UI adapts perfectly to user preferences (Dark/Light Mode).
+
+```tsx
+import { StyleSheet, View, Text } from 'react-native';
+import { useTheme } from '@/src/hooks/useTheme';
+import { theme } from '@/src/theme';
+
+export function MyComponent() {
+  const { colors } = useTheme();
+
+  return (
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <Text style={{ color: colors.text }}>Hello World</Text>
+    </View>
+  );
+}
+
+// Gunakan object 'theme' statis untuk tata letak (ukuran, jarak)
+const styles = StyleSheet.create({
+  container: {
+    padding: theme.spacing.m,
+    borderRadius: theme.radius.l,
+  }
+});
+```
+
+## 🔐 Authentication Flow
+
+1. User submits the `LoginForm` (Validated dynamically via Zod).
+2. The `useLogin` hook triggers the API call.
+3. Upon success, the Token is saved to `useAuthStore` (Physically encrypted in the OS via SecureStore).
+4. `RootLayout` (`app/_layout.tsx`) detects the state change and automatically redirects the user to the `(main)` tab group.
+5. All subsequent API calls will automatically attach this Token. If the Token expires, the user is automatically logged out.
