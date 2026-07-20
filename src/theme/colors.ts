@@ -1,4 +1,4 @@
-export const colors = {
+const lightColors = {
   primary: '#007AFF',
   secondary: '#5856D6',
   success: '#34C759',
@@ -10,3 +10,24 @@ export const colors = {
   textMuted: '#8E8E93',
   border: '#C6C6C8',
 };
+
+const darkColors = {
+  primary: '#0A84FF',
+  secondary: '#5E5CE6',
+  success: '#30D158',
+  danger: '#FF453A',
+  warning: '#FFD60A',
+  info: '#64D2FF',
+  background: '#000000',
+  text: '#FFFFFF',
+  textMuted: '#EBEBF5',
+  border: '#38383A',
+};
+
+export const colors = {
+  light: lightColors,
+  dark: darkColors,
+};
+
+// Mengekspor tipe data warna agar autocomplete IDE tetap berjalan lancar
+export type ColorTheme = typeof lightColors;
